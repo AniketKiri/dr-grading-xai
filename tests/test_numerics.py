@@ -215,7 +215,9 @@ def test_analyse_margins_are_model_minus_floor():
     grey = rng.uniform(size=n) < 0.1
     r, arr = analyse(y, logits, y, logits, y, np.arange(n), cfg, quality_test=q, quality_train=q, grey_test=grey)
     md = results_markdown(r)   # formatting of every section, including the new subgroup and grade-mix tables
-    assert "Grey camera surround subgroup" in md and "Grades 0/1/2/3/4" in md
+    assert "Grey camera surround subgroup" in md and "Grades 0/1/2/3/4" in md and "Severe disease" in md
+    s = r["severe_sensitivity"]
+    assert s["n_severe"] == int((y >= 3).sum()) and s["lo"] <= s["point"] <= s["hi"]
     assert r["grey_surround_subgroup"]["subsets"]["in_group"]["n"] == int(grey.sum())
     assert r["referral_rule"]["achieved_coverage"] == pytest.approx(0.8, abs=0.01)   # val == test here
     assert sum(b["n"] for b in r["quality_strata_sharpness"]["bands"]) == n
@@ -251,6 +253,14 @@ def test_subgroup_report_hand_case_and_blank_small_cells():
     t = subgroup_report(y, pred, tiny, np.arange(len(y)), K, 2, B=50, seed=0)
     assert t["subsets"]["in_group"]["n"] == 5 and t["subsets"]["in_group"]["accuracy"] is None
     assert t["difference_in_minus_out"]["accuracy"] is None and t["difference_in_minus_out"]["qwk"] is None
+
+
+def test_severe_sensitivity_hand_case():
+    from drxai.metrics import severe_sensitivity
+    y = np.array([3, 3, 4, 4, 2, 0])
+    pred = np.array([3, 2, 4, 3, 3, 0])     # severe: 3->3, 3->2 (missed), 4->4, 4->3; the 2->3 does not count
+    assert severe_sensitivity(y, pred) == pytest.approx(3 / 4)
+    assert np.isnan(severe_sensitivity(np.array([0, 1, 2]), np.array([0, 1, 2])))
 
 
 def test_quality_strata_reports_grade_mix_per_band():

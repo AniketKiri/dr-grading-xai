@@ -16,8 +16,8 @@ import pandas as pd
 from .calibration import (apply_referral_rule, confidence, ece, fit_temperature, referral_curve,
                           threshold_for_coverage)
 from .config import resolve, save_json
-from .metrics import (bootstrap_ci, classification_metrics, error_direction, majority_floor, qwk,
-                      quality_strata, referable_auc, subgroup_report)
+from .metrics import (SEVERE_MIN_GRADE, bootstrap_ci, classification_metrics, error_direction, majority_floor,
+                      qwk, quality_strata, referable_auc, severe_sensitivity, subgroup_report)
 from .ordinal import outputs_to_pred, outputs_to_probs
 
 
@@ -61,6 +61,9 @@ def analyse(y_test, logits_test, y_val, logits_val, y_train, groups_test, cfg: d
         "majority_floor": floor,
         "margin_above_floor": margins,
         "error_direction": error_direction(y_test, pred, ref),
+        # report only: nothing is chosen from it
+        "severe_sensitivity": {"min_grade": SEVERE_MIN_GRADE, "n_severe": int((y_test >= SEVERE_MIN_GRADE).sum()),
+                               **bootstrap_ci(lambda i: severe_sensitivity(y_test[i], pred[i]), groups_test, B, seed)},
         "referable_auc": referable_auc(y_test, probs, ref),
         "temperature": T,
         "calibration": {"ece_uncalibrated": ece(confidence(probs_raw, pred), correct),
@@ -125,6 +128,10 @@ def results_markdown(r: dict) -> str:
               f"- Referable DR (grade >= 2): sensitivity {e['referable_sensitivity']:.3f}, "
               f"specificity {e['referable_specificity']:.3f}, AUROC {r['referable_auc']:.3f}, "
               f"missed referable cases {e['missed_referable']}",
+              f"- Severe disease (grade >= {r['severe_sensitivity']['min_grade']}, n = "
+              f"{r['severe_sensitivity']['n_severe']}): share called grade >= {r['severe_sensitivity']['min_grade']} "
+              f"{r['severe_sensitivity']['point']:.3f} (95% CI {r['severe_sensitivity']['lo']:.3f} to "
+              f"{r['severe_sensitivity']['hi']:.3f})",
               "", "## Calibration",
               f"- Temperature (fitted on validation): {r['temperature']:.3f}",
               f"- ECE uncalibrated {cal['ece_uncalibrated']['ece']:.3f}; "

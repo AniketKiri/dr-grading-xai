@@ -42,6 +42,17 @@ def error_direction(y, pred, referable_min: int) -> dict:
     }
 
 
+SEVERE_MIN_GRADE = 3   # ICDR severe NPDR and PDR: the grades that need urgent rather than routine referral
+
+
+def severe_sensitivity(y, pred, severe_min: int = SEVERE_MIN_GRADE) -> float:
+    """Share of true severe or proliferative images that the model also calls severe or worse.
+    Referable sensitivity can look good while severe eyes are called moderate; this shows that case."""
+    y, pred = np.asarray(y), np.asarray(pred)
+    sev = y >= severe_min
+    return float((pred[sev] >= severe_min).mean()) if sev.any() else float("nan")
+
+
 def referable_auc(y, probs, referable_min: int) -> float:
     y_ref = (np.asarray(y) >= referable_min).astype(int)
     if y_ref.min() == y_ref.max():
