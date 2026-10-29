@@ -32,11 +32,18 @@ def load_run(run_dir: Path):
     return cfg, net.to(device()).eval()
 
 
+def eval_workers(cfg: dict) -> int:
+    """Loader workers for inference. Default 0: on Windows each worker re-imports torch (~2 GB committed),
+    and evaluate crashed with error 1455 when the page file had just shrunk after training. Inference has
+    no randomness, so this changes memory use and speed only, never a number."""
+    return int(cfg.get("eval", {}).get("num_workers", 0))
+
+
 @torch.no_grad()
 def infer(net, df: pd.DataFrame, cfg: dict, blur_sigma=0.0, gamma=1.0, batch_size=32) -> np.ndarray:
     """Raw logits for every row of df, in df order."""
     ds = FundusDataset(df, cache_dir(cfg), eval_transform(cfg["data"]["img_size"]), blur_sigma, gamma)
-    dl = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=cfg["train"]["num_workers"])
+    dl = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=eval_workers(cfg))
     dev = device()
     use_amp = cfg["train"]["amp"] and dev.type == "cuda"
     out = np.zeros((len(ds), net_out_dim(net)), dtype=np.float32)

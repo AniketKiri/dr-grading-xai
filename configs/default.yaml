@@ -54,6 +54,7 @@ train:
   num_workers: 2                # each Windows worker re-imports torch (~1.4 GB commit); 4 exhausted a 16 GB laptop
 
 eval:
+  num_workers: 0                # inference loads in the main process: no extra torch imports, no randomness to lose
   bootstrap: 2000
   coverage_grid: [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.6, 0.5]
   referral_target_coverage: 0.8   # share decided automatically; threshold set on validation

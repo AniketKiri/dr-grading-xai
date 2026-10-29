@@ -1,0 +1,4 @@
+D:\Aston Assessment KTP\dr-grading-xai\runs\resnet50_corn: head corn  val QWK 0.920  test QWK 0.908
+D:\Aston Assessment KTP\dr-grading-xai\runs\resnet50_ce: head ce  val QWK 0.904  test QWK 0.909
+primary (chosen on validation): D:\Aston Assessment KTP\dr-grading-xai\runs\resnet50_corn
+test QWK difference -0.002 (95% CI -0.013 to +0.011)  -> interval includes zero: no demonstrated difference

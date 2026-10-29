@@ -1,0 +1,22 @@
+train 7574  val 1263  (test not loaded)
+epoch  1  loss 0.4616  val QWK 0.8467  acc 0.7253  615s
+epoch  2  loss 0.3297  val QWK 0.8482  acc 0.7427  563s
+epoch  3  loss 0.3016  val QWK 0.8823  acc 0.7712  561s
+epoch  4  loss 0.2811  val QWK 0.8945  acc 0.7823  557s
+epoch  5  loss 0.2691  val QWK 0.8784  acc 0.7712  559s
+epoch  6  loss 0.2589  val QWK 0.8694  acc 0.7807  550s
+epoch  7  loss 0.2466  val QWK 0.8765  acc 0.7878  542s
+epoch  8  loss 0.2459  val QWK 0.9040  acc 0.7997  540s
+epoch  9  loss 0.2292  val QWK 0.9029  acc 0.8092  540s
+epoch 10  loss 0.2145  val QWK 0.9079  acc 0.7997  544s
+epoch 11  loss 0.2011  val QWK 0.9069  acc 0.8282  561s
+epoch 12  loss 0.1921  val QWK 0.9140  acc 0.8353  610s
+epoch 13  loss 0.1724  val QWK 0.9115  acc 0.8290  581s
+epoch 14  loss 0.1661  val QWK 0.9038  acc 0.8187  575s
+epoch 15  loss 0.1507  val QWK 0.9131  acc 0.8258  582s
+epoch 16  loss 0.1372  val QWK 0.9192  acc 0.8377  589s
+epoch 17  loss 0.1273  val QWK 0.9189  acc 0.8242  564s
+epoch 18  loss 0.1237  val QWK 0.9130  acc 0.8219  557s
+epoch 19  loss 0.1209  val QWK 0.9181  acc 0.8266  551s
+epoch 20  loss 0.1237  val QWK 0.9199  acc 0.8250  553s
+best validation QWK 0.9199; run saved to D:\Aston Assessment KTP\dr-grading-xai\runs\resnet50_corn

@@ -1,0 +1,37 @@
+label consistency: 536 images break at least one rule
+extracting trained features ...
+extracting imagenet_only features ...
+# Lesion-flag analyses
+
+## Label consistency (ICDR-implied rules; flags for inspection, not proof of error)
+| Rule | Train | Val | Test | Total |
+|---|---|---|---|---|
+| grade0_with_lesion | 0 | 0 | 0 | 0 |
+| graded_dr_without_lesion | 0 | 0 | 0 | 0 |
+| mild_with_more_than_microaneurysms | 360 | 60 | 116 | 536 |
+| pdr_without_nv_vh_rd | 0 | 0 | 0 | 0 |
+| nv_vh_rd_below_pdr | 0 | 0 | 0 | 0 |
+
+Images breaking at least one rule: 536 (4.8%)
+
+## Lesion probe (test AUROC, 95% CI; C chosen on validation)
+| Lesion | DR-trained | ImageNet-only | Difference | Interval excludes 0 |
+|---|---|---|---|---|
+| microaneurysm | 0.982 (0.977 to 0.986) | 0.910 (0.898 to 0.922) | +0.071 (+0.060 to +0.083) | yes |
+| hard_exudate | 0.951 (0.942 to 0.959) | 0.900 (0.885 to 0.914) | +0.051 (+0.039 to +0.063) | yes |
+| intraretinal_haemorrhage | 0.947 (0.938 to 0.956) | 0.856 (0.839 to 0.874) | +0.091 (+0.074 to +0.108) | yes |
+| venous_beading_irma | 0.937 (0.906 to 0.961) | 0.895 (0.862 to 0.925) | +0.041 (+0.010 to +0.072) | yes |
+| neovascularisation | 0.990 (0.984 to 0.995) | 0.948 (0.924 to 0.968) | +0.042 (+0.023 to +0.066) | yes |
+| vitreous_haemorrhage | 0.998 (0.996 to 0.999) | 0.984 (0.974 to 0.992) | +0.014 (+0.006 to +0.024) | yes |
+| retinal_detachment | skipped (positives {'train': 63, 'val': 9, 'test': 21}) | | | |
+
+## Errors by lesion (test; 126 missed of 643 referable)
+| Lesion | Referable with lesion | Missed with lesion | Miss rate when present | Share of misses |
+|---|---|---|---|---|
+| microaneurysm | 617 | 125 | 0.203 | 0.992 |
+| hard_exudate | 390 | 58 | 0.149 | 0.460 |
+| intraretinal_haemorrhage | 511 | 106 | 0.207 | 0.841 |
+| venous_beading_irma | 43 | 5 | 0.116 | 0.040 |
+| neovascularisation | 121 | 4 | 0.033 | 0.032 |
+| vitreous_haemorrhage | 53 | 0 | 0.000 | 0.000 |
+| retinal_detachment | 21 | 0 | 0.000 | 0.000 |

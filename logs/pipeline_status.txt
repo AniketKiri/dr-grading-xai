@@ -1,0 +1,24 @@
+15:23:45  waiting for CORN training to exit
+15:58:56  CORN finished: best validation QWK 0.9199; run saved to D:\Aston Assessment KTP\dr-grading-xai\runs\resnet50_corn
+15:58:56  START train ce
+18:44:46  END   train ce exit 0
+18:44:46  START pytest numerics
+18:44:54  END   pytest numerics exit 0
+18:44:54  START evaluate corn
+18:45:28  END   evaluate corn exit 1
+STOPPED at evaluate corn
+18:48:46  RESUME from evaluate corn (eval.num_workers 0)
+19:19:32  RESUME 2 (previous resume script lacked the Step function)
+19:20:13  RESUME 3 (script rewritten in full)
+19:20:13  START evaluate corn
+19:25:53  END   evaluate corn exit 0
+19:25:53  START evaluate ce
+19:31:04  END   evaluate ce exit 0
+19:31:04  START compare
+19:31:17  END   compare exit 0
+primary (chosen on validation): runs/resnet50_corn
+19:31:17  START explain
+19:31:37  END   explain exit 0
+19:31:37  START lesions_report
+19:41:05  END   lesions_report exit 0
+19:41:05  ALL DONE

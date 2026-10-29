@@ -1,0 +1,21 @@
+train 7574  val 1263  (test not loaded)
+epoch  1  loss 1.0822  val QWK 0.8067  acc 0.7253  610s
+epoch  2  loss 0.7639  val QWK 0.8640  acc 0.7823  571s
+epoch  3  loss 0.6964  val QWK 0.8810  acc 0.8044  553s
+epoch  4  loss 0.6553  val QWK 0.8752  acc 0.8044  553s
+epoch  5  loss 0.6179  val QWK 0.8675  acc 0.7838  544s
+epoch  6  loss 0.5834  val QWK 0.8693  acc 0.7894  541s
+epoch  7  loss 0.5761  val QWK 0.8866  acc 0.8100  548s
+epoch  8  loss 0.5411  val QWK 0.8868  acc 0.8108  545s
+epoch  9  loss 0.5158  val QWK 0.8877  acc 0.7997  544s
+epoch 10  loss 0.4863  val QWK 0.8845  acc 0.8029  546s
+epoch 11  loss 0.4591  val QWK 0.8940  acc 0.8234  545s
+epoch 12  loss 0.4344  val QWK 0.9011  acc 0.8274  546s
+epoch 13  loss 0.3866  val QWK 0.9041  acc 0.8282  545s
+epoch 14  loss 0.3548  val QWK 0.9026  acc 0.8234  564s
+epoch 15  loss 0.3326  val QWK 0.9001  acc 0.8155  546s
+epoch 16  loss 0.2980  val QWK 0.8997  acc 0.8124  544s
+epoch 17  loss 0.2787  val QWK 0.9020  acc 0.8163  546s
+epoch 18  loss 0.2743  val QWK 0.9006  acc 0.8195  546s
+early stop: no validation gain for 5 epochs
+best validation QWK 0.9041; run saved to D:\Aston Assessment KTP\dr-grading-xai\runs\resnet50_ce

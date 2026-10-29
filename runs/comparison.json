@@ -1,0 +1,24 @@
+{
+  "selection_rule": "higher validation QWK",
+  "runs": [
+    {
+      "run": "D:\\Aston Assessment KTP\\dr-grading-xai\\runs\\resnet50_corn",
+      "head": "corn",
+      "val_qwk": 0.9198999162225673,
+      "test_qwk": 0.9078821596584283
+    },
+    {
+      "run": "D:\\Aston Assessment KTP\\dr-grading-xai\\runs\\resnet50_ce",
+      "head": "ce",
+      "val_qwk": 0.9040603371725826,
+      "test_qwk": 0.909472844930599
+    }
+  ],
+  "primary": "D:\\Aston Assessment KTP\\dr-grading-xai\\runs\\resnet50_corn",
+  "test_qwk_difference_primary_minus_other": {
+    "point": -0.0015906852721706555,
+    "lo": -0.013368088366840914,
+    "hi": 0.010738524928392742
+  },
+  "interval_excludes_zero": false
+}

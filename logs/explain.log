@@ -1,0 +1,1 @@
+{'target': 'expected grade', 'sanity_check': {'n': 64, 'median_spearman_trained_vs_randomised': -0.012166739369681566, 'note': 'values near 1 would mean the map does not depend on learned weights'}, 'lesion_agreement': 'not configured: set explain.lesions in the config'}

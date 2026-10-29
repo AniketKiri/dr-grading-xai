@@ -1,0 +1,329 @@
+{
+  "consistency": {
+    "grade0_with_lesion": {
+      "train": 0,
+      "val": 0,
+      "test": 0,
+      "total": 0
+    },
+    "graded_dr_without_lesion": {
+      "train": 0,
+      "val": 0,
+      "test": 0,
+      "total": 0
+    },
+    "mild_with_more_than_microaneurysms": {
+      "train": 360,
+      "val": 60,
+      "test": 116,
+      "total": 536
+    },
+    "pdr_without_nv_vh_rd": {
+      "train": 0,
+      "val": 0,
+      "test": 0,
+      "total": 0
+    },
+    "nv_vh_rd_below_pdr": {
+      "train": 0,
+      "val": 0,
+      "test": 0,
+      "total": 0
+    },
+    "any_rule": {
+      "total": 536,
+      "share": 0.048454167419996384
+    }
+  },
+  "probe": {
+    "trained": [
+      {
+        "lesion": "microaneurysm",
+        "skipped": false,
+        "positives": {
+          "train": 3010,
+          "val": 506,
+          "test": 876
+        },
+        "C": 0.01,
+        "val_auroc": 0.9819497600785293,
+        "test_auroc": 0.9817063882937133,
+        "lo": 0.9771462723732567,
+        "hi": 0.9859278215784654
+      },
+      {
+        "lesion": "hard_exudate",
+        "skipped": false,
+        "positives": {
+          "train": 1836,
+          "val": 302,
+          "test": 506
+        },
+        "C": 0.01,
+        "val_auroc": 0.965839943215883,
+        "test_auroc": 0.9507641863662807,
+        "lo": 0.9416218271029214,
+        "hi": 0.9589536446856988
+      },
+      {
+        "lesion": "intraretinal_haemorrhage",
+        "skipped": false,
+        "positives": {
+          "train": 1767,
+          "val": 299,
+          "test": 511
+        },
+        "C": 0.01,
+        "val_auroc": 0.9415340207330105,
+        "test_auroc": 0.9470653784763214,
+        "lo": 0.9376377168783839,
+        "hi": 0.9559763346742643
+      },
+      {
+        "lesion": "venous_beading_irma",
+        "skipped": false,
+        "positives": {
+          "train": 166,
+          "val": 27,
+          "test": 43
+        },
+        "C": 0.01,
+        "val_auroc": 0.9126812897039435,
+        "test_auroc": 0.9366273740754163,
+        "lo": 0.906428234964,
+        "hi": 0.9612671779121407
+      },
+      {
+        "lesion": "neovascularisation",
+        "skipped": false,
+        "positives": {
+          "train": 371,
+          "val": 63,
+          "test": 121
+        },
+        "C": 0.01,
+        "val_auroc": 0.9896296296296296,
+        "test_auroc": 0.990081859032775,
+        "lo": 0.9841226571078237,
+        "hi": 0.9948292601597707
+      },
+      {
+        "lesion": "vitreous_haemorrhage",
+        "skipped": false,
+        "positives": {
+          "train": 266,
+          "val": 39,
+          "test": 53
+        },
+        "C": 0.01,
+        "val_auroc": 0.9987640355287415,
+        "test_auroc": 0.998054136696897,
+        "lo": 0.9958796363318346,
+        "hi": 0.9994369191246276
+      },
+      {
+        "lesion": "retinal_detachment",
+        "skipped": true,
+        "positives": {
+          "train": 63,
+          "val": 9,
+          "test": 21
+        }
+      }
+    ],
+    "imagenet_only": [
+      {
+        "lesion": "microaneurysm",
+        "skipped": false,
+        "positives": {
+          "train": 3010,
+          "val": 506,
+          "test": 876
+        },
+        "C": 0.01,
+        "val_auroc": 0.9139728802585617,
+        "test_auroc": 0.9103318541385299,
+        "lo": 0.898113530434741,
+        "hi": 0.9223932637613377
+      },
+      {
+        "lesion": "hard_exudate",
+        "skipped": false,
+        "positives": {
+          "train": 1836,
+          "val": 302,
+          "test": 506
+        },
+        "C": 0.01,
+        "val_auroc": 0.9266354721557979,
+        "test_auroc": 0.9002051013205123,
+        "lo": 0.8852022841693692,
+        "hi": 0.9142353740158334
+      },
+      {
+        "lesion": "intraretinal_haemorrhage",
+        "skipped": false,
+        "positives": {
+          "train": 1767,
+          "val": 299,
+          "test": 511
+        },
+        "C": 0.01,
+        "val_auroc": 0.8891602714442333,
+        "test_auroc": 0.8563641885519732,
+        "lo": 0.838526851785006,
+        "hi": 0.874156432657038
+      },
+      {
+        "lesion": "venous_beading_irma",
+        "skipped": false,
+        "positives": {
+          "train": 166,
+          "val": 27,
+          "test": 43
+        },
+        "C": 0.01,
+        "val_auroc": 0.8698609612849095,
+        "test_auroc": 0.8951889668109052,
+        "lo": 0.8619263480619763,
+        "hi": 0.924568175630097
+      },
+      {
+        "lesion": "neovascularisation",
+        "skipped": false,
+        "positives": {
+          "train": 371,
+          "val": 63,
+          "test": 121
+        },
+        "C": 0.01,
+        "val_auroc": 0.9741798941798941,
+        "test_auroc": 0.9478050466643623,
+        "lo": 0.923764750005236,
+        "hi": 0.9676912078293537
+      },
+      {
+        "lesion": "vitreous_haemorrhage",
+        "skipped": false,
+        "positives": {
+          "train": 266,
+          "val": 39,
+          "test": 53
+        },
+        "C": 0.01,
+        "val_auroc": 0.9809996648231942,
+        "test_auroc": 0.9838250112929566,
+        "lo": 0.9740786358317848,
+        "hi": 0.9920842839462458
+      },
+      {
+        "lesion": "retinal_detachment",
+        "skipped": true,
+        "positives": {
+          "train": 63,
+          "val": 9,
+          "test": 21
+        }
+      }
+    ]
+  },
+  "probe_difference_trained_minus_imagenet": [
+    {
+      "lesion": "microaneurysm",
+      "difference": 0.07137453415518336,
+      "lo": 0.05995839112737701,
+      "hi": 0.08258039121727903,
+      "interval_excludes_zero": true
+    },
+    {
+      "lesion": "hard_exudate",
+      "difference": 0.05055908504576834,
+      "lo": 0.038859322906678644,
+      "hi": 0.06327093643752213,
+      "interval_excludes_zero": true
+    },
+    {
+      "lesion": "intraretinal_haemorrhage",
+      "difference": 0.09070118992434828,
+      "lo": 0.07413216445469231,
+      "hi": 0.10791063707594759,
+      "interval_excludes_zero": true
+    },
+    {
+      "lesion": "venous_beading_irma",
+      "difference": 0.04143840726451109,
+      "lo": 0.010250409589472775,
+      "hi": 0.0716155903905497,
+      "interval_excludes_zero": true
+    },
+    {
+      "lesion": "neovascularisation",
+      "difference": 0.04227681236841274,
+      "lo": 0.022905281007878253,
+      "hi": 0.06565444642760046,
+      "interval_excludes_zero": true
+    },
+    {
+      "lesion": "vitreous_haemorrhage",
+      "difference": 0.01422912540394039,
+      "lo": 0.005864474242887915,
+      "hi": 0.024219916319905454,
+      "interval_excludes_zero": true
+    }
+  ],
+  "errors_by_lesion": {
+    "n_referable": 643,
+    "n_missed": 126,
+    "rows": [
+      {
+        "lesion": "microaneurysm",
+        "referable_with_lesion": 617,
+        "missed_with_lesion": 125,
+        "miss_rate_when_present": 0.2025931928687196,
+        "share_of_misses_with_lesion": 0.9920634920634921
+      },
+      {
+        "lesion": "hard_exudate",
+        "referable_with_lesion": 390,
+        "missed_with_lesion": 58,
+        "miss_rate_when_present": 0.14871794871794872,
+        "share_of_misses_with_lesion": 0.4603174603174603
+      },
+      {
+        "lesion": "intraretinal_haemorrhage",
+        "referable_with_lesion": 511,
+        "missed_with_lesion": 106,
+        "miss_rate_when_present": 0.20743639921722112,
+        "share_of_misses_with_lesion": 0.8412698412698413
+      },
+      {
+        "lesion": "venous_beading_irma",
+        "referable_with_lesion": 43,
+        "missed_with_lesion": 5,
+        "miss_rate_when_present": 0.11627906976744186,
+        "share_of_misses_with_lesion": 0.03968253968253968
+      },
+      {
+        "lesion": "neovascularisation",
+        "referable_with_lesion": 121,
+        "missed_with_lesion": 4,
+        "miss_rate_when_present": 0.03305785123966942,
+        "share_of_misses_with_lesion": 0.031746031746031744
+      },
+      {
+        "lesion": "vitreous_haemorrhage",
+        "referable_with_lesion": 53,
+        "missed_with_lesion": 0,
+        "miss_rate_when_present": 0.0,
+        "share_of_misses_with_lesion": 0.0
+      },
+      {
+        "lesion": "retinal_detachment",
+        "referable_with_lesion": 21,
+        "missed_with_lesion": 0,
+        "miss_rate_when_present": 0.0,
+        "share_of_misses_with_lesion": 0.0
+      }
+    ]
+  }
+}

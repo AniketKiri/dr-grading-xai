@@ -25,7 +25,7 @@ from torch.utils.data import DataLoader
 
 from .config import cache_dir, resolve, save_json
 from .datasets import FundusDataset, eval_transform
-from .inference import device, load_manifest, load_run
+from .inference import device, eval_workers, load_manifest, load_run
 from .labels import detect_columns, normalise_id, read_labels
 from .lesion_analysis import (LESIONS, consistency_flags, consistency_summary, errors_by_lesion, parse_lesions,
                               probe_difference, probe_lesions)
@@ -39,7 +39,7 @@ def penultimate_features(net, df: pd.DataFrame, cfg: dict, batch_size: int = 32)
     store = {}
     h = last.register_forward_hook(lambda m, i, o: store.__setitem__("x", i[0].detach()))
     ds = FundusDataset(df, cache_dir(cfg), eval_transform(cfg["data"]["img_size"]))
-    dl = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=cfg["train"]["num_workers"])
+    dl = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=eval_workers(cfg))
     dev = device()
     out = np.zeros((len(ds), last.in_features), dtype=np.float32)
     try:

@@ -1,0 +1,84 @@
+{
+  "seed": 42,
+  "paths": {
+    "data_root": "data/MMRDR/DatasetRT/MMRDR-CFP",
+    "label_csv": null,
+    "image_dir": "img",
+    "cache_dir": "cache",
+    "runs_dir": "runs"
+  },
+  "columns": {
+    "image_id": "image",
+    "grade": "grade",
+    "eye": "lr",
+    "patient_id": null,
+    "split": null
+  },
+  "split_from_id_prefix": {
+    "tr": "train",
+    "ts": "test"
+  },
+  "data": {
+    "num_classes": 5,
+    "referable_min_grade": 2,
+    "cache_size": 448,
+    "img_size": 384,
+    "val_fraction": 0.15,
+    "test_fraction": 0.15,
+    "near_duplicate_min_corr": 0.9,
+    "drop_train_duplicates_of_test": true
+  },
+  "model": {
+    "backbone": "resnet50",
+    "pretrained": true,
+    "head": "ce",
+    "dropout": 0.2
+  },
+  "train": {
+    "epochs": 20,
+    "batch_size": 16,
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "warmup_epochs": 1,
+    "patience": 5,
+    "sampler": "sqrt_inverse",
+    "amp": true,
+    "num_workers": 2
+  },
+  "eval": {
+    "bootstrap": 2000,
+    "coverage_grid": [
+      1.0,
+      0.95,
+      0.9,
+      0.85,
+      0.8,
+      0.75,
+      0.7,
+      0.6,
+      0.5
+    ],
+    "referral_target_coverage": 0.8,
+    "quality_blur_sigmas": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "quality_gammas": [
+      1.0,
+      1.5,
+      2.0
+    ]
+  },
+  "explain": {
+    "n_per_group": 3,
+    "pointing_tolerance_px": 15,
+    "lesions": {
+      "format": null,
+      "mask_dir": null,
+      "bbox_csv": null
+    }
+  },
+  "_config_path": "D:\\Aston Assessment KTP\\dr-grading-xai\\configs\\default.yaml"
+}
