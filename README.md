@@ -118,7 +118,9 @@ automatic coverage), the image-quality band edges (training images), and which m
 
 **Hyperparameters.** No search was run. Learning rate, schedule, batch size, input size and epochs are
 standard fine-tuning defaults fixed before training, chosen to fit a 6 GB GPU. The one design choice
-compared is the output head (ordinal against softmax), decided on validation. `--lr` and `--seed`
+compared is the output head (ordinal against softmax), decided on validation. Data loading uses
+2 worker processes: on Windows each worker re-imports PyTorch (about 1.4 GB of committed memory),
+and 4 workers exhausted a 16 GB laptop. This changes loading speed only, not the experiment. `--lr` and `--seed`
 are exposed so a small validation-only sweep or seed repeat can be added.
 
 **Imbalance.** Training uses class sampling weighted by the inverse square root of class frequency.

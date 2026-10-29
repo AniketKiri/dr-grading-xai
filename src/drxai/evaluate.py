@@ -17,12 +17,12 @@ from .calibration import (apply_referral_rule, confidence, ece, fit_temperature,
                           threshold_for_coverage)
 from .config import resolve, save_json
 from .metrics import (bootstrap_ci, classification_metrics, error_direction, majority_floor, qwk,
-                      quality_strata, referable_auc)
+                      quality_strata, referable_auc, subgroup_report)
 from .ordinal import outputs_to_pred, outputs_to_probs
 
 
 def analyse(y_test, logits_test, y_val, logits_val, y_train, groups_test, cfg: dict,
-            quality_test=None, quality_train=None) -> tuple[dict, dict]:
+            quality_test=None, quality_train=None, grey_test=None) -> tuple[dict, dict]:
     """All test-set numbers, computed from saved logits. Pure NumPy so it is unit-testable.
 
     Everything that is *chosen* (temperature, referral threshold, quality band edges) is chosen on
@@ -75,8 +75,35 @@ def analyse(y_test, logits_test, y_val, logits_val, y_train, groups_test, cfg: d
         qt = np.asarray(quality_train, float)
         cuts = np.nanquantile(qt, [1 / 3, 2 / 3])
         results["quality_strata_sharpness"] = quality_strata(y_test, pred, conf, quality_test, cuts, K)
+    if grey_test is not None:
+        # reported only; no threshold, epoch or model choice reads this
+        results["grey_surround_subgroup"] = subgroup_report(y_test, pred, grey_test, groups_test, K, ref, B, seed)
     arrays = {"pred": pred, "probs": probs, "conf": conf}
     return results, arrays
+
+
+def subgroup_markdown(s: dict) -> list[str]:
+    def cell(c):   # blank when the subset is below min_n
+        return "" if c is None else f"{c['point']:.3f} ({c['lo']:.3f} to {c['hi']:.3f})"
+
+    lines = ["", "## Grey camera surround subgroup (measurement only; nothing is chosen from it)",
+             f"Cells with fewer than {s['min_n']} images show the count and no metric.", "",
+             "| Subset | n | Grades 0/1/2/3/4 | Accuracy (95% CI) | QWK (95% CI) |", "|---|---|---|---|---|"]
+    for name, label in (("in_group", "Grey surround"), ("out_group", "Black surround")):
+        v = s["subsets"][name]
+        lines.append(f"| {label} | {v['n']} | {'/'.join(str(c) for c in v['grade_mix'].values())} | "
+                     f"{cell(v['accuracy'])} | {cell(v['qwk'])} |")
+    d = s["difference_in_minus_out"]
+    lines.append(f"| Difference (grey minus black) | | | {cell(d['accuracy'])} | {cell(d['qwk'])} |")
+    lines += ["", "Share predicted referable within each true grade (separates a surround effect from grade mix):", "",
+              "| True grade | n grey | Grey | n black | Black |", "|---|---|---|---|---|"]
+    def share(v):
+        return "" if v is None else f"{v:.3f}"
+
+    for row in s["predicted_referable_by_true_grade"]:
+        lines.append(f"| {row['true_grade']} | {row['n_in_group']} | {share(row['share_predicted_referable_in_group'])} | "
+                     f"{row['n_out_group']} | {share(row['share_predicted_referable_out_group'])} |")
+    return lines
 
 
 def results_markdown(r: dict) -> str:
@@ -117,11 +144,15 @@ def results_markdown(r: dict) -> str:
     if "quality_strata_sharpness" in r:
         qs = r["quality_strata_sharpness"]
         lines_rule += ["", "## Performance by image sharpness (band edges from training images)",
-                       "| Band | n | Accuracy | QWK | Mean confidence |", "|---|---|---|---|---|"]
-        lines_rule += [f"| {b['band']} | {b['n']} | {b['accuracy']:.3f} | {b['qwk']:.3f} | {b['mean_confidence']:.3f} |"
-                       for b in qs["bands"]]
+                       "Sharpness falls with grade, so compare the grade mix before reading band accuracy.", "",
+                       "| Band | n | Grades 0/1/2/3/4 | Accuracy | QWK | Mean confidence |",
+                       "|---|---|---|---|---|---|"]
+        lines_rule += [f"| {b['band']} | {b['n']} | {'/'.join(str(v) for v in b['grade_mix'].values())} | "
+                       f"{b['accuracy']:.3f} | {b['qwk']:.3f} | {b['mean_confidence']:.3f} |" for b in qs["bands"]]
         lines_rule.append(f"- Spearman, sharpness vs confidence {qs['spearman_quality_vs_confidence']:.3f}; "
                           f"sharpness vs correct {qs['spearman_quality_vs_correct']:.3f}")
+    if "grey_surround_subgroup" in r:
+        lines_rule += subgroup_markdown(r["grey_surround_subgroup"])
     for row in r["referral_curve"]:
         lines.append(f"| {row['coverage']:.2f} | {row['n_referred']} | {row['accuracy']:.3f} | {row['qwk']:.3f} | "
                      f"{row['missed_referable_caught_by_review']} | {row['caught_if_referred_at_random']:.1f} |")
@@ -152,7 +183,9 @@ def main() -> None:
     res, arr = analyse(te["grade"].to_numpy(), lt, va["grade"].to_numpy(), lv, tr["grade"].to_numpy(),
                        te["group"].to_numpy(), cfg,
                        quality_test=te["q_sharpness"].to_numpy() if has_q else None,
-                       quality_train=tr["q_sharpness"].to_numpy() if has_q else None)
+                       quality_train=tr["q_sharpness"].to_numpy() if has_q else None,
+                       grey_test=te["grey_surround"].astype(bool).to_numpy() if "grey_surround" in te.columns
+                       else None)
 
     K = cfg["data"]["num_classes"]
     out = te[["image_id", "grade"]].copy()

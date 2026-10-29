@@ -79,6 +79,63 @@ def bootstrap_ci(stat, groups, B: int = 2000, seed: int = 0, alpha: float = 0.05
     return {"point": float(point), "lo": float(lo), "hi": float(hi)}
 
 
+def subgroup_report(y, pred, in_group, groups, K: int, referable_min: int, B: int, seed: int,
+                    min_n: int = 10) -> dict:
+    """Test performance inside and outside a subgroup (here: the grey camera surround). Measurement only:
+    nothing is chosen from it. Any cell with fewer than min_n images keeps its count but no metric,
+    because an accuracy or kappa on a handful of images is noise presented as a number.
+
+    The difference (in minus out) is bootstrapped over groups of the whole test set, recomputing both
+    subsets in each resample, so their sizes vary as they would and a group spanning both is kept whole.
+    Because the subgroup's grade mix differs, the share called referable is also given within each true
+    grade: a difference that survives grade by grade is not just a grade-mix effect.
+    """
+    y, pred, g_in, groups = np.asarray(y), np.asarray(pred), np.asarray(in_group, bool), np.asarray(groups)
+
+    def acc(i):
+        return float((y[i] == pred[i]).mean()) if len(i) >= min_n else np.nan
+
+    def kappa(i):
+        return qwk(y[i], pred[i], K) if len(i) >= min_n and len(np.unique(y[i])) > 1 else np.nan
+
+    def ci_or_blank(stat, mask):
+        if mask.sum() < min_n:
+            return None
+        idx = np.flatnonzero(mask)
+        return bootstrap_ci(lambda j: stat(idx[j]), groups[idx], B, seed)
+
+    out = {"min_n": min_n, "subsets": {}}
+    for name, mask in (("in_group", g_in), ("out_group", ~g_in)):
+        out["subsets"][name] = {
+            "n": int(mask.sum()),
+            "grade_mix": {int(k): int(c) for k, c in enumerate(np.bincount(y[mask], minlength=K))},
+            "accuracy": ci_or_blank(acc, mask), "qwk": ci_or_blank(kappa, mask)}
+
+    def diff(stat):
+        def d(i):
+            a, b = i[g_in[i]], i[~g_in[i]]
+            return stat(a) - stat(b)
+        if g_in.sum() < min_n or (~g_in).sum() < min_n:
+            return None
+        c = bootstrap_ci(d, groups, B, seed)
+        c["interval_excludes_zero"] = bool(c["lo"] > 0 or c["hi"] < 0)
+        return c
+
+    out["difference_in_minus_out"] = {"accuracy": diff(acc), "qwk": diff(kappa)}
+
+    rows = []
+    for k in range(K):
+        row = {"true_grade": k}
+        for name, mask in (("in_group", g_in), ("out_group", ~g_in)):
+            m = mask & (y == k)
+            row[f"n_{name}"] = int(m.sum())
+            row[f"share_predicted_referable_{name}"] = (float((pred[m] >= referable_min).mean())
+                                                        if m.sum() >= min_n else None)
+        rows.append(row)
+    out["predicted_referable_by_true_grade"] = rows
+    return out
+
+
 def quality_strata(y, pred, conf, quality, cuts, K: int) -> dict:
     """Performance and confidence within bands of an image-quality measure.
 
@@ -96,10 +153,13 @@ def quality_strata(y, pred, conf, quality, cuts, K: int) -> dict:
         m = band == b
         if m.sum() == 0:
             continue
+        # sharpness falls with grade, so a band's accuracy partly reflects its grade mix; report both
         rows.append({"band": name, "n": int(m.sum()), "accuracy": float((y[m] == pred[m]).mean()),
                      "qwk": qwk(y[m], pred[m], K) if len(np.unique(y[m])) > 1 else float("nan"),
-                     "mean_confidence": float(conf[m].mean())})
+                     "mean_confidence": float(conf[m].mean()),
+                     "grade_mix": {int(g): int(c) for g, c in enumerate(np.bincount(y[m], minlength=K))}})
     ok = np.isfinite(q)
     return {"cuts": [float(c) for c in cuts], "bands": rows,
+            "note": "band differences are confounded with grade: compare grade_mix before reading accuracy",
             "spearman_quality_vs_confidence": float(spearmanr(q[ok], conf[ok])[0]),
             "spearman_quality_vs_correct": float(spearmanr(q[ok], (y == pred)[ok])[0])}

@@ -8,7 +8,7 @@ from PIL import Image
 from drxai.calibration import ece, fit_temperature, referral_curve
 from drxai.data import (connected_groups, crop_to_square, fingerprint, index_images, near_duplicate_pairs,
                         resolve_ids, surround_threshold)
-from drxai.evaluate import analyse
+from drxai.evaluate import analyse, results_markdown
 from drxai.lesions import energy_enrichment, pointing_game
 from drxai.metrics import bootstrap_ci, error_direction, majority_floor, qwk
 from drxai.ordinal import corn_class_probs, corn_predict, outputs_to_probs, softmax
@@ -212,7 +212,11 @@ def test_analyse_margins_are_model_minus_floor():
     cfg = {"data": {"num_classes": K, "referable_min_grade": 2}, "model": {"head": "corn"},
            "eval": {"bootstrap": 200, "coverage_grid": [1.0, 0.8], "referral_target_coverage": 0.8}, "seed": 0}
     q = rng.uniform(0, 1, n)
-    r, arr = analyse(y, logits, y, logits, y, np.arange(n), cfg, quality_test=q, quality_train=q)
+    grey = rng.uniform(size=n) < 0.1
+    r, arr = analyse(y, logits, y, logits, y, np.arange(n), cfg, quality_test=q, quality_train=q, grey_test=grey)
+    md = results_markdown(r)   # formatting of every section, including the new subgroup and grade-mix tables
+    assert "Grey camera surround subgroup" in md and "Grades 0/1/2/3/4" in md
+    assert r["grey_surround_subgroup"]["subsets"]["in_group"]["n"] == int(grey.sum())
     assert r["referral_rule"]["achieved_coverage"] == pytest.approx(0.8, abs=0.01)   # val == test here
     assert sum(b["n"] for b in r["quality_strata_sharpness"]["bands"]) == n
     for k in ("qwk", "accuracy", "macro_f1"):
@@ -220,6 +224,46 @@ def test_analyse_margins_are_model_minus_floor():
         assert r["bootstrap_95ci"][k]["lo"] <= r["performance"][k] <= r["bootstrap_95ci"][k]["hi"]
     assert np.allclose(arr["probs"].sum(1), 1)
     assert r["performance"]["qwk"] > 0.8
+
+
+def test_subgroup_report_hand_case_and_blank_small_cells():
+    from drxai.metrics import subgroup_report
+    # grey: grade 1 x10 (5 right, 5 called grade 2), grade 2 x6 (all right)          -> accuracy 11/16
+    # black: grade 0 x20 right, grade 1 x10 right, grade 2 x5 called 1, grade 3 x5 right -> accuracy 35/40
+    y = np.r_[[1] * 10, [2] * 6, [0] * 20, [1] * 10, [2] * 5, [3] * 5]
+    pred = np.r_[[1] * 5, [2] * 5, [2] * 6, [0] * 20, [1] * 10, [1] * 5, [3] * 5]
+    grey = np.r_[np.ones(16, bool), np.zeros(40, bool)]
+    s = subgroup_report(y, pred, grey, np.arange(len(y)), K, 2, B=300, seed=0)
+    gi, go = s["subsets"]["in_group"], s["subsets"]["out_group"]
+    assert (gi["n"], go["n"]) == (16, 40)
+    assert gi["grade_mix"] == {0: 0, 1: 10, 2: 6, 3: 0, 4: 0} and go["grade_mix"] == {0: 20, 1: 10, 2: 5, 3: 5, 4: 0}
+    assert gi["accuracy"]["point"] == pytest.approx(11 / 16) and go["accuracy"]["point"] == pytest.approx(35 / 40)
+    d = s["difference_in_minus_out"]["accuracy"]
+    assert d["point"] == pytest.approx(11 / 16 - 35 / 40) and d["lo"] <= d["point"] <= d["hi"]
+    rows = {r["true_grade"]: r for r in s["predicted_referable_by_true_grade"]}
+    assert rows[1]["share_predicted_referable_in_group"] == pytest.approx(0.5)
+    assert rows[1]["share_predicted_referable_out_group"] == pytest.approx(0.0)
+    assert rows[2]["n_in_group"] == 6 and rows[2]["share_predicted_referable_in_group"] is None    # below 10
+    assert rows[2]["n_out_group"] == 5 and rows[2]["share_predicted_referable_out_group"] is None
+    # a subgroup below 10 keeps its count but gets no metric and no difference
+    tiny = np.zeros(len(y), bool)
+    tiny[:5] = True
+    t = subgroup_report(y, pred, tiny, np.arange(len(y)), K, 2, B=50, seed=0)
+    assert t["subsets"]["in_group"]["n"] == 5 and t["subsets"]["in_group"]["accuracy"] is None
+    assert t["difference_in_minus_out"]["accuracy"] is None and t["difference_in_minus_out"]["qwk"] is None
+
+
+def test_quality_strata_reports_grade_mix_per_band():
+    from drxai.metrics import quality_strata
+    y = np.array([0, 0, 0, 1, 4, 4, 2, 3, 4])
+    q = np.array([9, 8, 7, 5, 1, 2, 5, 1, 9.0])          # cuts 3 and 6: low = q < 3, middle 3..6, high >= 6
+    pred = y.copy()
+    pred[0] = 1                                            # one error, so the Spearman terms are defined
+    r = quality_strata(y, pred, np.linspace(0.5, 0.9, 9), q, [3.0, 6.0], K)
+    mix = {b["band"]: b["grade_mix"] for b in r["bands"]}
+    assert mix["low"] == {0: 0, 1: 0, 2: 0, 3: 1, 4: 2}
+    assert mix["middle"] == {0: 0, 1: 1, 2: 1, 3: 0, 4: 0}
+    assert mix["high"] == {0: 3, 1: 0, 2: 0, 3: 0, 4: 1}
 
 
 # ---------------------------------------------------------------- protocol: choices made on validation only

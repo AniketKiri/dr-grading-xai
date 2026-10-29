@@ -51,7 +51,7 @@ train:
   patience: 5                   # early stopping on validation QWK
   sampler: sqrt_inverse         # none | sqrt_inverse | inverse class-frequency sampling
   amp: true
-  num_workers: 4
+  num_workers: 2                # each Windows worker re-imports torch (~1.4 GB commit); 4 exhausted a 16 GB laptop
 
 eval:
   bootstrap: 2000
