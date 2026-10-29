@@ -60,9 +60,12 @@ def main() -> None:
 
     ds = FundusDataset(train_df, cache_dir(cfg), train_transform(cfg["data"]["img_size"]))
     sampler = class_balanced_sampler(train_df["grade"].to_numpy(), tc["sampler"], cfg["seed"])
+    # Not persistent: the training workers exit before validation starts its own, so at most num_workers
+    # worker processes exist at once. On Windows each re-imports torch (~1.4 GB committed), and keeping
+    # both sets alive crashed a 16 GB laptop at the end of an epoch.
     dl = DataLoader(ds, batch_size=tc["batch_size"], sampler=sampler, shuffle=sampler is None,
                     num_workers=tc["num_workers"], pin_memory=dev.type == "cuda",
-                    persistent_workers=tc["num_workers"] > 0, drop_last=True)
+                    persistent_workers=False, drop_last=True)
 
     opt = torch.optim.AdamW(net.parameters(), lr=tc["lr"], weight_decay=tc["weight_decay"])
     steps = tc["epochs"] * len(dl)
