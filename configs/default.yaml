@@ -1,0 +1,71 @@
+# Default configuration. Every path is relative to the repository root unless absolute.
+# Run `python -m drxai.inspect_data` first and check the column mapping below against its output.
+
+seed: 42
+
+paths:
+  data_root: data/MMRDR/DatasetRT/MMRDR-CFP   # folder holding img/ and the annotation CSV
+  label_csv: null        # null = use the single .csv found in data_root
+  image_dir: img
+  cache_dir: cache       # preprocessed images and manifest are written here
+  runs_dir: runs
+
+# Mapping from the MMRDR annotation CSV to internal names.
+# null = auto-detect from common names; inspect_data prints what it chose.
+columns:
+  image_id: image        # values look like img/tr000001.jpg; normalise_id reduces them to tr000001
+  grade: grade
+  eye: lr                # 0 = OS (left), 1 = OD (right), per the dataset README
+  patient_id: null       # MMRDR does not appear to release patient IDs; leave null unless it does
+  split: null            # set if the CSV carries an official split column
+
+# If image IDs encode the official split (e.g. tr000001 / ts000001), map prefixes here.
+# Leave empty to fall back to a split column, then to a stratified hold-out (reported as a limitation).
+# MMRDR: every id is tr###### or ts###### (8,893 / 2,225), matching the authors' README.
+split_from_id_prefix:
+  tr: train
+  ts: test
+
+data:
+  num_classes: 5
+  referable_min_grade: 2        # referable DR = moderate NPDR or worse
+  cache_size: 448               # side of the cached square crop
+  img_size: 384                 # network input
+  val_fraction: 0.15            # carved from the training pool only
+  test_fraction: 0.15           # used only when no official test split exists
+  near_duplicate_min_corr: 0.9   # high-pass fingerprint correlation treated as the same photograph
+  drop_train_duplicates_of_test: true   # never alters the test set
+
+model:
+  backbone: resnet50            # resnet50 | efficientnet_b0
+  pretrained: true              # ImageNet weights from torchvision
+  head: corn                    # corn (ordinal) | ce (plain softmax baseline)
+  dropout: 0.2
+
+train:
+  epochs: 20
+  batch_size: 16
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  warmup_epochs: 1
+  patience: 5                   # early stopping on validation QWK
+  sampler: sqrt_inverse         # none | sqrt_inverse | inverse class-frequency sampling
+  amp: true
+  num_workers: 4
+
+eval:
+  bootstrap: 2000
+  coverage_grid: [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.6, 0.5]
+  referral_target_coverage: 0.8   # share decided automatically; threshold set on validation
+  quality_blur_sigmas: [0, 1, 2, 4]
+  quality_gammas: [1.0, 1.5, 2.0]
+
+explain:
+  n_per_group: 3                # examples per gallery group
+  pointing_tolerance_px: 15     # at img_size resolution
+  # MMRDR gives only image-level presence flags for 7 lesion types (FP.csv `lesion`), no masks or boxes,
+  # so localisation agreement cannot be measured; the flags are analysed separately.
+  lesions:
+    format: null                # null | mask_dir | bbox_csv
+    mask_dir: null              # mask_dir: folder of binary masks named <image_id>*.png (all files for an id are unioned)
+    bbox_csv: null              # bbox_csv: CSV with image_id, x0, y0, x1, y1 in original pixel coordinates

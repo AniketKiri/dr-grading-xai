@@ -1,0 +1,49 @@
+﻿data_root: D:\Aston Assessment KTP\dr-grading-xai\data\MMRDR\DatasetRT\MMRDR-CFP  exists=True
+
+== top-level contents
+        FP.csv
+  [dir] img  (11118 entries)
+
+== label file: FP.csv  rows=11118
+type        str
+image       str
+grade     int64
+lesion      str
+lr        int64
+
+first rows:
+  type             image  grade                 lesion  lr
+0   FP  img/tr000001.jpg      0  [0, 0, 0, 0, 0, 0, 0]   0
+1   FP  img/tr000002.jpg      3  [1, 1, 1, 0, 0, 0, 0]   1
+2   FP  img/tr000003.jpg      2  [1, 1, 1, 0, 0, 0, 0]   0
+3   FP  img/tr000004.jpg      1  [1, 0, 0, 0, 0, 0, 0]   1
+4   FP  img/tr000005.jpg      0  [0, 0, 0, 0, 0, 0, 0]   0
+5   FP  img/tr000006.jpg      2  [1, 1, 1, 0, 0, 0, 0]   0
+6   FP  img/tr000007.jpg      2  [1, 0, 1, 0, 0, 0, 0]   0
+7   FP  img/tr000008.jpg      0  [0, 0, 0, 0, 0, 0, 0]   0
+
+== column mapping used: {'image_id': 'image', 'grade': 'grade', 'eye': 'lr', 'patient_id': None, 'split': None}
+
+grade (grade) value counts:
+grade
+0    6579
+1    1302
+2    1959
+3     603
+4     675
+
+eye (lr) value counts:
+lr
+0    5607
+1    5511
+
+unique ids: 11118 of 11118 rows
+id prefixes (may encode the official split): {'tr': 8893, 'ts': 2225}
+
+unmapped columns (check for lesion, quality or patient fields): ['type', 'lesion']
+
+== images in img/: 11118
+labelled ids without an image: 0  e.g. []
+images without a label: 0  e.g. []
+
+Next: confirm the mapping and split rule in the config, then run python -m drxai.prepare

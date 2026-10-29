@@ -1,0 +1,48 @@
+﻿column mapping: {'image_id': 'image', 'grade': 'grade', 'eye': 'lr', 'patient_id': None, 'split': None}
+
+integrity checks
+  [PASS] grades parse as numbers: 0 unparseable rows dropped
+  [PASS] grades within 0..K-1: observed [0, 1, 2, 3, 4]
+  [PASS] image ids unique: 0 duplicate ids
+  [PASS] every id resolves to exactly one file with a matching stem: 11118 files
+
+caching 11118 images at 448px with 4 workers ...
+
+image quality (cached images, inside the field of view)
+                  count    mean     std    min      1%     10%     50%      90%      max
+q_sharpness     11118.0  77.884  47.227  5.918  13.966  28.938  67.556  134.557  569.150
+q_brightness    11118.0  86.001  32.339  5.559  32.201  49.322  81.370  132.723  204.730
+q_contrast      11118.0  25.026  10.622  4.539   8.042  12.890  23.067   40.484   81.398
+q_fov_fraction  11118.0   0.781   0.020  0.549   0.705   0.770   0.787    0.788    0.925
+  [PASS] near-duplicate pairs found: 169 pairs, 4 with different grades
+  [PASS] duplicate detector flags a plausible share of images: 305 of 11118 images in a duplicate pair
+  [PASS] split source: official
+  [PASS] train near-copies of test images removed: 56 training images dropped
+  [PASS] no group spans train/val: 0 shared groups
+  [PASS] no group spans train/test: 0 shared groups
+  [PASS] no group spans val/test: 0 shared groups
+  [PASS] all grades present in train: present [0, 1, 2, 3, 4]
+  [PASS] all grades present in val: present [0, 1, 2, 3, 4]
+  [PASS] all grades present in test: present [0, 1, 2, 3, 4]
+  [PASS] cached images readable at expected size (50 sampled)
+  [PASS] manifest round-trips
+
+grade x split
+split  train  val  test
+grade                  
+0       4462  744  1323
+1        891  149   259
+2       1327  221   409
+3        431   72   100
+4        463   77   134
+
+grey-surround images by grade (train and val only; 317 corrected in all splits)
+       black_surround  grey_surround  grey_share_pct
+grade                                               
+0                5181             25             0.5
+1                 946             94             9.0
+2                1481             67             4.3
+3                 466             37             7.4
+4                 509             31             5.7
+
+manifest written: D:\Aston Assessment KTP\dr-grading-xai\cache\manifest.csv  (11062 images)

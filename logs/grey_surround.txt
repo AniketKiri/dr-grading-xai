@@ -1,0 +1,11 @@
+﻿Source: python -m drxai.prepare --workers 4 --force (logs\prepare.log). Train and val only; test not used.
+Grey surround = corner surround level between 10 and 100 (data.surround_threshold).
+
+grey-surround images by grade (train and val only; 317 corrected in all splits)
+       black_surround  grey_surround  grey_share_pct
+grade                                               
+0                5181             25             0.5
+1                 946             94             9.0
+2                1481             67             4.3
+3                 466             37             7.4
+4                 509             31             5.7
