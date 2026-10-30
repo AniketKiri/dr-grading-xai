@@ -312,42 +312,60 @@ of the training pool (14.3%).
 
 ## Design decisions
 
-**Splits and duplicates.** The official MMRDR split (`tr`/`ts` id prefix) is used unchanged, and the test
+### Splits and duplicates
+
+The official MMRDR split (`tr`/`ts` id prefix) is used unchanged, and the test
 set is never modified. MMRDR releases no patient ids, so images of the same eye cannot be kept on one side
 of a split. As a partial guard, `prepare` finds the same photograph stored under two ids (high-pass
 fingerprint correlation): 169 such pairs. It keeps each pair in one group and drops the 56 training
 images that copy a test image.
 
-**Grey camera surround.** 317 of the 11,062 images have a dark grey surround (level about 20) rather than
+### Grey camera surround
+
+317 of the 11,062 images have a dark grey surround (level about 20) rather than
 black. In training and validation data these are 0.5% of grade 0 but 4.3% to 9.0% of grades 1 to 4
 (`logs/grey_surround.txt`), so the border alone would hint at the grade. `prepare` estimates each image's
 surround from its corners and sets a grey surround to black. Black-surround and white-canvas images are
 processed exactly as before (checked byte for byte). The `grey_surround` manifest column keeps the flag so
 test performance can be reported for that subgroup.
 
-**Ordinal head.** Grades are ordered, and QWK penalises distant errors more. The default head is CORN
+### Ordinal head
+
+Grades are ordered, and QWK penalises distant errors more. The default head is CORN
 (Shi, Cao and Raschka, 2023), which guarantees a monotone survival function. The predicted grade is the
 median of the predictive distribution. A plain softmax head is the baseline.
 
-**No hyperparameter search.** Learning rate, schedule, batch size (16), input size (384) and epochs (20,
+### No hyperparameter search
+
+Learning rate, schedule, batch size (16), input size (384) and epochs (20,
 early stopping with patience 5) are standard fine-tuning defaults, fixed before training to fit a 6 GB
 GPU. The one design choice compared is the output head, decided on validation.
 
-**Imbalance.** Training samples classes in proportion to the inverse square root of their frequency.
+### Imbalance
+
+Training samples classes in proportion to the inverse square root of their frequency.
 Full inverse weighting would show the few severe and proliferative images many times per epoch.
 
-**Floors.** Every headline metric is reported next to a majority-class floor and as a margin above it.
+### Floors
+
+Every headline metric is reported next to a majority-class floor and as a margin above it.
 The referral curve is compared with referring the same number of cases at random.
 
-**Calibration and review rule.** One temperature, fitted on validation, is applied to confidences only.
+### Calibration and review rule
+
+One temperature, fitted on validation, is applied to confidences only.
 For CORN, rescaling logits can move the predicted grade, so grades always come from raw logits. Cases
 below the review threshold are flagged for extended optometrist review.
 
-**Image quality.** `prepare` records sharpness, brightness, contrast and field-of-view fraction. `evaluate`
+### Image quality
+
+`prepare` records sharpness, brightness, contrast and field-of-view fraction. `evaluate`
 reports performance in sharpness bands (edges from training images) and, with `--quality`, on test images
 with simulated blur and under-exposure.
 
-**Explanations.** Grad-CAM (Selvaraju et al., 2017) on the last convolutional block, targeting the
+### Explanations
+
+Grad-CAM (Selvaraju et al., 2017) on the last convolutional block, targeting the
 expected grade, so maps show regions that raise the predicted severity. Checks against over-reading them:
 
 - a model-randomisation test (Adebayo et al., 2018);
@@ -357,7 +375,9 @@ expected grade, so maps show regions that raise the predicted severity. Checks a
   locations, so heatmaps cannot be scored spatially. Instead: grade-lesion consistency, a linear probe for
   each lesion against an ImageNet-only floor, and the lesions present in missed referable eyes.
 
-**Integrity checks.** `prepare` stops on any critical failure and records every check in
+### Integrity checks
+
+`prepare` stops on any critical failure and records every check in
 `cache/integrity_report.json`: grades in range, unique ids, each id resolving to exactly one image file,
 duplicate detection with a guard against an over-eager detector, no group spanning two splits, readable
 cached images, and a manifest round trip.
