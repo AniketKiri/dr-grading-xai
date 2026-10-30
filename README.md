@@ -83,11 +83,22 @@ Key findings:
     <td width="50%"><img src="runs/resnet50_corn/figures/confusion_matrix.png" alt="Test confusion matrix"><br><em>Test confusion matrix</em></td>
     <td width="50%"><img src="runs/resnet50_corn/figures/referral_curve.png" alt="Referral curve"><br><em>Accuracy as uncertain cases are referred</em></td>
   </tr>
-  <tr>
-    <td width="50%"><img src="runs/resnet50_corn/figures/gradcam_gallery.png" alt="Grad-CAM examples"><br><em>Grad-CAM examples (target: expected grade)</em></td>
-    <td width="50%"><img src="runs/resnet50_corn/figures/case_cards.png" alt="Case cards"><br><em>Case cards: prediction, explanation, clinical judgement</em></td>
-  </tr>
 </table>
+
+<p align="center">
+  <img src="runs/resnet50_corn/figures/case_cards.png" alt="Case cards" width="100%">
+  <br>
+  <em>Case cards: prediction, explanation and clinical judgement kept in separate panels. Bottom row: a confident miss the review rule cannot catch.</em>
+</p>
+
+<details>
+<summary>Grad-CAM examples (12 test images: correct, missed and over-graded)</summary>
+<p align="center">
+  <img src="runs/resnet50_corn/figures/gradcam_gallery.png" alt="Grad-CAM examples" width="560">
+  <br>
+  <em>Grad-CAM, target: expected grade. A plausible location does not prove a lesion was recognised.</em>
+</p>
+</details>
 
 <sub>Fundus images from MMRDR (Tang et al., 2026), CC BY 4.0.</sub>
 
