@@ -135,7 +135,7 @@ def select_cases(pred: pd.DataFrame, tau: float, ref: int) -> list[tuple[str, pd
     auto = pred[pred.confidence >= tau]
     referred = pred[pred.confidence < tau]
     picks = [
-        ("Not flagged, correct",auto[(auto.grade >= ref) & (auto.pred == auto.grade)]
+        ("No uncertainty flag, correct", auto[(auto.grade >= ref) & (auto.pred == auto.grade)]
          .sort_values("confidence", ascending=False)),
         ("Sent for review by low confidence", referred[referred.pred != referred.grade].sort_values("confidence")),
         ("Confident error the rule cannot catch", auto[(auto.grade >= ref) & (auto.pred < ref)]
@@ -151,8 +151,9 @@ def draw_case_cards(cases, raws, cams, lesions, tau: float, K: int, ref: int, pa
     for r, ((title, row), img, cam, les) in enumerate(zip(cases, raws, cams, lesions)):
         probs = np.array([row[f"p{k}"] for k in range(K)])
         g, p, c = int(row["grade"]), int(row["pred"]), float(row["confidence"])
-        # "no flag" rather than "decide automatically": an unflagged eye still gets a routine examination
-        action = "no flag: routine examination" if c >= tau else "flag for extended optometrist review"
+        # The rule flags uncertainty only, so the wording says so; it is not advice about the eye (a confident
+        # PDR prediction is still "confident: no uncertainty flag").
+        action = "confident: no uncertainty flag" if c >= tau else "uncertain: flag for extended optometrist review"
         # Triage turns on referable vs not, which the top grade alone can hide when mass is split.
         p_ref = float(probs[ref:].sum())
         axes[r, 0].imshow(img)

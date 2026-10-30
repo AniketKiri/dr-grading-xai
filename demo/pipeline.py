@@ -76,7 +76,8 @@ class Pipeline:
         raws, maps = cams_for(df, self.cam, self.cfg)
         p = probs[0]
         return Result(pred=int(pred[0]), confidence=conf, probs=p, p_referable=float(p[self.ref:].sum()),
-                      action="no flag: routine examination" if conf >= self.tau else "flag for extended optometrist review",
+                      action=("confident: no uncertainty flag" if conf >= self.tau
+                              else "uncertain: flag for extended optometrist review"),
                       sharpness=float(sharp), low_sharpness=bool(sharp < self.sharp_low), grey_surround=bool(grey),
                       display=raws[0], cam=maps[0])
 
