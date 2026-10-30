@@ -26,7 +26,7 @@ decide which patients need extended review. It is not a clinically validated dia
 - [Data](#data)
 - [Design decisions](#design-decisions)
 - [Limitations](#limitations)
-- [Acknowledgements and AI assistance](#acknowledgements-and-ai-assistance)
+- [Acknowledgements](#acknowledgements)
 - [Licence](#licence)
 
 ## How it works
@@ -379,7 +379,7 @@ cached images, and a manifest round trip.
 - **Explanations are not localisation evidence.** Without lesion masks, Grad-CAM maps cannot be checked
   against where lesions actually are.
 
-## Acknowledgements and AI assistance
+## Acknowledgements
 
 - MMRDR dataset, CC BY 4.0 (Tang et al., 2026). Example fundus images in figures and notebooks are from
   MMRDR and shown under that licence.
@@ -387,13 +387,6 @@ cached images, and a manifest round trip.
 - CORN ordinal regression: Shi, Cao and Raschka, *Pattern Analysis and Applications*, 2023.
 - Grad-CAM: Selvaraju et al., ICCV 2017. Saliency sanity checks: Adebayo et al., NeurIPS 2018.
 - PyTorch, torchvision, scikit-learn, SciPy, NumPy, pandas, Matplotlib, Pillow, Gradio.
-
-**AI assistance**
-
-I used Claude (Anthropic) throughout as an AI assistant: through Claude Code to write and
-debug most of the code, to discuss design and analysis decisions, and to draft and edit the report. I
-directed the work, made the final decisions, ran every experiment, verified each reported number against
-the pipeline outputs, and can explain every part of it.
 
 ## Licence
 
