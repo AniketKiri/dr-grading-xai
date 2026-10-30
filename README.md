@@ -9,6 +9,49 @@ community practice decide which patients need extended review. It is not a clini
 
 This is a research prototype. It is not a clinically validated diagnostic tool.
 
+## Results summary
+
+Primary model: ResNet-50 with a CORN ordinal head, chosen over a softmax (CE) baseline on validation
+QWK (0.920 against 0.904). MMRDR official test split, n = 2,225, measured once. 95% CIs are grouped
+bootstrap over near-duplicate clusters (2,000 draws). Full tables: [results.md](runs/resnet50_corn/results.md),
+[lesions_report.md](runs/resnet50_corn/lesions_report.md), [compare.log](logs/compare.log).
+
+| Metric (test) | Value | 95% CI | Majority-class floor | Margin |
+|---|---|---|---|---|
+| Quadratic weighted kappa | 0.908 | 0.893 to 0.921 | 0.000 | +0.908 |
+| Macro-F1 | 0.725 | 0.699 to 0.748 | 0.149 | +0.575 |
+| Accuracy | 0.827 | 0.811 to 0.842 | 0.595 | +0.232 |
+| Referable DR (grade >= 2) sensitivity / specificity | 0.804 / 0.954 | | | |
+| Severe DR (grade >= 3, n = 234) called grade >= 3 | 0.829 | 0.782 to 0.877 | | |
+
+- **Ordinal against softmax:** test QWK difference -0.002 (-0.013 to +0.011). No demonstrated difference.
+- **Error direction:** 55.4% of the 386 errors under-grade; 126 of 643 referable eyes are graded below 2.
+- **Calibration:** temperature 1.503 (validation) lowers ECE from 0.056 to 0.025.
+- **Referral rule** (threshold 0.637 fixed on validation for 80% coverage): 79.5% decided automatically
+  with accuracy 0.908; 70 of the 126 missed referable eyes are sent to review, against 25.8 for random
+  referral of the same number.
+- **Blur raises confidence while lowering accuracy.** Simulated Gaussian blur at sigma 2 lowers accuracy
+  from 0.827 to 0.757 while mean confidence rises from 0.826 to 0.842 (point values, no CI). Confidence
+  therefore does not signal this failure, so a confidence-based referral rule would not catch it.
+- **Grey camera surround** (63 test images): accuracy 0.148 lower (-0.261 to -0.036), but the grey images
+  are almost all grades 1 to 4. Standardised for grade mix, the gap is +0.017 (-0.104 to 0.132): no
+  demonstrated surround effect (post hoc; `analysis/grey_standardised.py`).
+- **Explanations:** Grad-CAM randomisation check passes (median Spearman between trained and randomised
+  maps -0.012). Six of seven lesion flags are more decodable from the DR-trained features than from
+  ImageNet-only features (every interval excludes zero; retinal detachment skipped, too few positives).
+  Lesions rise with grade, so this shows the features encode lesions, not that the grade uses them.
+
+| Referral curve | Quality probe |
+|---|---|
+| ![Referral curve](runs/resnet50_corn/figures/referral_curve.png) | ![Quality probe](runs/resnet50_corn/figures/quality_probe.png) |
+| **Reliability** | **Lesion probe** |
+| ![Reliability diagram](runs/resnet50_corn/figures/reliability.png) | ![Lesion probe](runs/resnet50_corn/figures/lesion_probe.png) |
+
+![Case cards](runs/resnet50_corn/figures/case_cards.png)
+
+Other figures (confusion matrix, Grad-CAM gallery, sanity check) are in
+[runs/resnet50_corn/figures](runs/resnet50_corn/figures). Model checkpoints are not committed.
+
 ## What the pipeline does
 
 | Stage | Command | Output |
@@ -59,20 +102,26 @@ packages in the user site directory cannot shadow the environment's own.
 
 ## Reproducing the results
 
+The exact commands behind the reported results (Windows, from the repository root, `drxai` active):
+
 ```bash
-pytest tests/test_numerics.py                 # metric and geometry checks against hand-worked values
-pytest tests/test_smoke.py -s                 # every stage end to end on synthetic data, about a minute
+set PYTHONNOUSERSITE=1
+pytest tests/test_numerics.py tests/test_lesions.py   # metric checks against hand-worked values, about 20 s
+pytest tests/test_smoke.py -s                 # every stage end to end on synthetic data, about 2 minutes
 python -m drxai.inspect_data
 python -m drxai.prepare --workers 4
 python -m drxai.train --run-name resnet50_corn
 python -m drxai.train --run-name resnet50_ce --head ce        # softmax baseline
 python -m drxai.evaluate --run runs/resnet50_corn --quality
-python -m drxai.evaluate --run runs/resnet50_ce
-python -m drxai.compare --runs runs/resnet50_corn runs/resnet50_ce
-python -m drxai.explain --run runs/<primary chosen by compare>
-python -m drxai.lesions_report --run runs/<primary chosen by compare>
-pip freeze > environment-lock.txt             # exact versions used for the reported results
+python -m drxai.evaluate --run runs/resnet50_ce --quality
+python -m drxai.compare --runs runs/resnet50_corn runs/resnet50_ce   # chose resnet50_corn
+python -m drxai.explain --run runs/resnet50_corn
+python -m drxai.lesions_report --run runs/resnet50_corn
+python analysis/grey_standardised.py          # post hoc grade-standardised grey-surround gap
 ```
+
+`environment-lock.txt` lists the exact package versions used (`pip freeze` from `drxai`). Console
+output of each stage from the reported run is in `logs/`.
 
 Every run saves the exact configuration it used (`config_used.json`) and the library versions and GPU
 (`train_summary.json`). The seed is set in the config (default 42). `cudnn.benchmark` is enabled for
@@ -105,6 +154,9 @@ validation data these images are 0.5% of grade 0 but 4.3% to 9.0% of grades 1 to
 the threshold above it and sets the surround to black. Images with a black surround, and five with a
 white canvas, are processed exactly as before (checked byte for byte). The `grey_surround` manifest
 column keeps the flag so their test performance can be reported as a subgroup.
+`analysis/grey_standardised.py` is a post hoc analysis, written after the test results were seen: it
+compares grey-surround accuracy with the accuracy expected from black-surround images at the same grade
+mix. It measures the already-evaluated run and chooses nothing.
 
 **Ordinal head.** Grades are ordered, and quadratic weighted kappa penalises distant errors more. The
 default head is CORN (Shi, Cao and Raschka, 2023), which predicts conditional threshold probabilities
@@ -170,7 +222,11 @@ src/drxai/
     datasets.py model.py inference.py plots.py
 tests/
     test_numerics.py        hand-checked values for every reported metric
+    test_lesions.py         hand-checked lesion-flag rules
     test_smoke.py           synthetic end-to-end run
+analysis/grey_standardised.py   post hoc grade-standardised grey-surround comparison
+runs/                       outputs of the reported run (no checkpoints)
+logs/                       console output of every stage
 ```
 
 ## Acknowledgements and external resources
