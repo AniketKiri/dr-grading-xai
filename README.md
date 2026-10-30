@@ -124,7 +124,7 @@ the data and evaluate (about 6 minutes for `evaluate --quality` on an RTX 3060 L
 
 1. Install (see below) and download MMRDR (see [Data](#data)).
 2. Download `resnet50_corn_best.pt` from the
-   [v1.0 release](https://github.com/<USERNAME>/dr-grading-xai/releases/tag/v1.0) and check its SHA-256
+   [v1.0 release](https://github.com/AniketKiri/dr-grading-xai/releases/tag/v1.0) and check its SHA-256
    against the release notes.
 3. Place it at `runs/resnet50_corn/checkpoints/best.pt`, then run:
 
@@ -143,7 +143,7 @@ GPU the grades should match. Confidences can differ slightly between machines, b
 Python 3.11 in a conda environment named `drxai`, with PyTorch from the pip CUDA 12.6 wheels:
 
 ```bash
-git clone https://github.com/<USERNAME>/dr-grading-xai.git
+git clone https://github.com/AniketKiri/dr-grading-xai.git
 cd dr-grading-xai
 conda create -n drxai python=3.11 -y
 conda activate drxai
@@ -253,7 +253,7 @@ python demo/app.py
 ```
 
 Then open http://127.0.0.1:7860. It needs `runs/resnet50_corn/checkpoints/best.pt` from the
-[v1.0 release](https://github.com/<USERNAME>/dr-grading-xai/releases/tag/v1.0), and the MMRDR images for
+[v1.0 release](https://github.com/AniketKiri/dr-grading-xai/releases/tag/v1.0), and the MMRDR images for
 the built-in examples. It falls back to the CPU if no GPU is found.
 
 What to try:
@@ -263,6 +263,16 @@ What to try:
 - **ts000004**, the low-sharpness warning: its sharpness (39.3) is below the training band edge (53.4).
   This check is experimental and has not been validated.
 - **Upload your own colour fundus photograph.**
+
+<table>
+  <tr>
+    <td width="33%"><img src="demo/screenshots/ts000001.png" alt="Demo on ts000001"><br><em>ts000001: no DR, graded 0 with confidence 0.98, decided automatically</em></td>
+    <td width="33%"><img src="demo/screenshots/ts000729.png" alt="Demo on ts000729"><br><em>ts000729: moderate DR graded 0 with confidence 0.95, a confident miss</em></td>
+    <td width="33%"><img src="demo/screenshots/ts000004.png" alt="Demo on ts000004"><br><em>ts000004: moderate DR graded 2, with the low-sharpness warning</em></td>
+  </tr>
+</table>
+
+<sub>Fundus images from MMRDR (Tang et al., 2026), CC BY 4.0.</sub>
 
 Precision note: for the six examples the crop is pixel-identical to the cached image and the grade
 matches `predictions_test.csv`. Confidences differ slightly: by at most 0.0003 on the GPU, because the
@@ -367,9 +377,12 @@ cached images, and a manifest round trip.
 - Grad-CAM: Selvaraju et al., ICCV 2017. Saliency sanity checks: Adebayo et al., NeurIPS 2018.
 - PyTorch, torchvision, scikit-learn, SciPy, NumPy, pandas, Matplotlib, Pillow, Gradio.
 
-AI assistance: code in this repository was written with help from Claude Code (Anthropic), an AI coding
-assistant. The author set the experimental design and the rules it follows (for example, that the test
-split is measured once and never used to choose anything), and reviewed the code and results.
+**AI assistance**
+
+I used Claude (Anthropic) throughout as an AI assistant: through Claude Code to write and
+debug most of the code, to discuss design and analysis decisions, and to draft and edit the report. I
+directed the work, made the final decisions, ran every experiment, verified each reported number against
+the pipeline outputs, and can explain every part of it.
 
 ## Licence
 
