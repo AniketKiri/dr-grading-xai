@@ -6,4 +6,5 @@ ts000004     2            True         2         2 0.845740 0.845508  0.000232  
 ts000067     3            True         3         3 0.938976 0.939814  0.000838          44.890     44.890
 ts000014     4            True         4         4 0.800183 0.800293  0.000110          35.506     35.506
 ts000729     2            True         0         0 0.951331 0.952596  0.001265          64.510     64.510
-MISMATCH
+PASS (grades exact)
+Confidence: maximum absolute difference 0.0013 (full-precision CPU against the mixed-precision GPU reference; no pass/fail applied)

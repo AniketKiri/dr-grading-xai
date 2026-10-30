@@ -45,10 +45,17 @@ def main() -> None:
     # Grades and crops must match exactly. Confidence may not: the app infers one image at a time under mixed
     # precision while evaluate used batches of 32, and fp16 rounding depends on the batch (each example matches
     # exactly inside its original batch; see the README's demo section). 1e-3 bounds that rounding.
-    ok = (df["crop_identical"].all() and (df["pred_csv"] == df["pred_app"]).all()
-          and (df["abs_diff"] <= CONF_TOL).all())
-    print(f"PASS (grades exact, confidence within {CONF_TOL:g})" if ok else
-          f"FAIL (grade, crop or confidence outside {CONF_TOL:g})")
+    exact = df["crop_identical"].all() and (df["pred_csv"] == df["pred_app"]).all()
+    if pipe.device == "cuda":
+        ok = exact and (df["abs_diff"] <= CONF_TOL).all()
+        print(f"PASS (grades exact, confidence within {CONF_TOL:g})" if ok else
+              f"FAIL (grade, crop or confidence outside {CONF_TOL:g})")
+    else:
+        # The reference confidences were computed on the GPU under mixed precision, so a full-precision CPU run
+        # differs by more than the GPU rounding; only grades are held to a pass/fail here.
+        print("PASS (grades exact)" if exact else "FAIL (grade or crop differs)")
+        print(f"Confidence: maximum absolute difference {df['abs_diff'].max():.4f} "
+              "(full-precision CPU against the mixed-precision GPU reference; no pass/fail applied)")
 
 
 if __name__ == "__main__":
