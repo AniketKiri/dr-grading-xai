@@ -107,7 +107,7 @@ Key findings:
 
 - **Calibration.** A temperature of 1.503 (fitted on validation) lowers expected calibration error from
   0.056 to 0.025. The review threshold (confidence below 0.637) was set on validation for 80% automatic
-  coverage. On test it decides 79.5% automatically, with accuracy 0.908 on those cases.
+  coverage. On test, 79.5% of cases carry no uncertainty flag, with accuracy 0.908 on those cases.
 - **Error direction.** 55.4% of errors under-grade, which is the costly direction for triage.
 - **Grey camera surround** (63 test images). Accuracy is 0.148 lower (-0.261 to -0.036), but these images
   are almost all grades 1 to 4. Standardised for grade mix, the gap is +0.017 (-0.104 to 0.132): no
