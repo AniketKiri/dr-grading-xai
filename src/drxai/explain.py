@@ -152,8 +152,8 @@ def draw_case_cards(cases, raws, cams, lesions, tau: float, K: int, ref: int, pa
         probs = np.array([row[f"p{k}"] for k in range(K)])
         g, p, c = int(row["grade"]), int(row["pred"]), float(row["confidence"])
         # The rule flags uncertainty only, so the wording says so; it is not advice about the eye (a confident
-        # PDR prediction is still "confident: no uncertainty flag").
-        action = "confident: no uncertainty flag" if c >= tau else "uncertain: flag for extended optometrist review"
+        # PDR prediction still shows "none").
+        flag = "none" if c >= tau else "uncertain, extended optometrist review"
         # Triage turns on referable vs not, which the top grade alone can hide when mass is split.
         p_ref = float(probs[ref:].sum())
         axes[r, 0].imshow(img)
@@ -173,7 +173,7 @@ def draw_case_cards(cases, raws, cams, lesions, tau: float, K: int, ref: int, pa
         axes[r, 2].set_title("Grade distribution", fontsize=8)
         txt = (f"1  MODEL PREDICTION\n   {SHORT[p]}  (confidence {c:.2f}; threshold {tau:.2f})\n"
                f"   P(referable DR, grade >= {ref}) = {p_ref:.2f}\n"
-               f"   Action under the referral rule:\n   {action}\n\n"
+               f"   Uncertainty flag: {flag}\n\n"
                f"2  EXPLANATION\n   Regions that raise the predicted severity. Plausible location\n"
                f"   does not prove the model recognised a lesion.\n\n"
                f"3  CLINICAL JUDGEMENT\n   Reference grade: {SHORT[g]}. Decision remains with the\n"
