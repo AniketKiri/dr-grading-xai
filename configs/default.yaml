@@ -31,7 +31,7 @@ data:
   referable_min_grade: 2        # referable DR = moderate NPDR or worse
   cache_size: 448               # side of the cached square crop
   img_size: 384                 # network input
-  val_fraction: 0.15            # carved from the training pool only
+  val_fraction: 0.15            # from the training pool only; rounds to one fold of a 7-fold stratified grouped split (14.3%)
   test_fraction: 0.15           # used only when no official test split exists
   near_duplicate_min_corr: 0.9   # high-pass fingerprint correlation treated as the same photograph
   drop_train_duplicates_of_test: true   # never alters the test set

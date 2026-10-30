@@ -27,7 +27,7 @@ def fake_fundus(rng, size=400) -> Image.Image:
     return im
 
 
-# n_train is sized so validation (15% of it) can hold the 20 positives and 20 negatives per lesion
+# n_train is sized so validation (one fold of a 7-fold grouped split, 14.3% of it) can hold the 20 positives and 20 negatives per lesion
 # that the lesion probe requires; at 240 it had 35 images and every lesion was skipped.
 def build(root: Path, n_train=480, n_test=60, seed=0) -> Path:
     rng = np.random.default_rng(seed)

@@ -5,3 +5,4 @@ runs/*/checkpoints/
 __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
+release/
