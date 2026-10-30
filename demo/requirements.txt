@@ -1,0 +1,4 @@
+# Optional demo app only; not needed to reproduce any reported result.
+# Install into a separate environment cloned from drxai: gradio 6.31.0 requires Pillow < 13 and
+# would replace the Pillow 13.0.0 that produced the reported results (see environment-lock.txt).
+gradio==6.31.0

@@ -1,0 +1,9 @@
+﻿device: cuda
+image_id  true  crop_identical  pred_csv  pred_app conf_csv conf_app     abs_diff  sharp_manifest  sharp_app
+ts000001     0            True         0         0 0.980471 0.980471 0.000000e+00         162.731    162.731
+ts000002     1            True         1         1 0.539694 0.539564 1.293719e-04         122.540    122.540
+ts000004     2            True         2         2 0.845740 0.845803 6.287359e-05          39.305     39.305
+ts000067     3            True         3         3 0.938976 0.938976 1.117587e-07          44.890     44.890
+ts000014     4            True         4         4 0.800183 0.800200 1.746416e-05          35.506     35.506
+ts000729     2            True         0         0 0.951331 0.951090 2.412014e-04          64.510     64.510
+MISMATCH

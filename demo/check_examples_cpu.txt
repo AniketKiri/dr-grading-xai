@@ -1,0 +1,9 @@
+﻿device: cpu
+image_id  true  crop_identical  pred_csv  pred_app conf_csv conf_app  abs_diff  sharp_manifest  sharp_app
+ts000001     0            True         0         0 0.980471 0.980349  0.000121         162.731    162.731
+ts000002     1            True         1         1 0.539694 0.540691  0.000997         122.540    122.540
+ts000004     2            True         2         2 0.845740 0.845508  0.000232          39.305     39.305
+ts000067     3            True         3         3 0.938976 0.939814  0.000838          44.890     44.890
+ts000014     4            True         4         4 0.800183 0.800293  0.000110          35.506     35.506
+ts000729     2            True         0         0 0.951331 0.952596  0.001265          64.510     64.510
+MISMATCH

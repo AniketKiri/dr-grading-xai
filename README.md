@@ -135,6 +135,36 @@ run no model and compute nothing reported elsewhere: every reported number comes
 own output files. Apart from those numbers, they only make small display summaries such as grade
 counts by split.
 
+## Demo app (optional)
+
+`demo/app.py` is a local Gradio page that grades one fundus photograph with the trained CORN model and
+shows prediction, Grad-CAM explanation and clinical judgement as three separate panels, as the case
+cards do. It is a research prototype, not a clinically validated tool, and nothing reported depends on it.
+It reuses the pipeline's own preprocessing, inference, temperature, referral threshold and Grad-CAM.
+
+It needs the trained checkpoint `runs/resnet50_corn/checkpoints/best.pt`, which is not in the
+repository: train it with the commands above or download it from [checkpoint link to be added]. The six
+built-in examples also need the MMRDR images under `data/`. Gradio needs a Pillow version older than the
+one used for the results, so install it in a separate environment cloned from `drxai`:
+
+```bash
+conda create -n drxai-demo --clone drxai
+conda activate drxai-demo
+pip install -r demo/requirements.txt
+python demo/check_examples.py      # the six examples against predictions_test.csv
+python demo/app.py                 # then open http://127.0.0.1:7860
+```
+
+It runs on the CPU if no GPU is found. For the six examples the crop is pixel-identical to the cached
+image and the grade matches `predictions_test.csv`, but confidences differ slightly: by at most 0.0003
+on the GPU, because the app infers one image at a time under mixed precision and `evaluate` used
+batches of 32 (each example matches exactly when run inside its original batch), and by at most 0.0013
+on the CPU, which computes in full precision. `demo/check_examples_gpu.txt` and
+`demo/check_examples_cpu.txt` hold the comparison tables.
+The low-sharpness warning is an experimental check and has not been validated.
+
+![Demo](demo/screenshot.png)
+
 ## Design decisions
 
 **Splits.** If MMRDR defines a train/test split (in a column or in the image-id prefix), it is used
