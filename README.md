@@ -9,7 +9,7 @@ cases, and explanations that are tested before they are trusted.
 [![Status: research prototype](https://img.shields.io/badge/Status-research%20prototype-orange)](#limitations)
 
 <p align="center">
-  <img src="demo/screenshot.png" alt="Demo app grading test image ts000729" width="820">
+  <img src="demo/screenshots/ts000729.png" alt="Demo app grading test image ts000729" width="820">
   <br>
   <em>The demo app on ts000729: a referable eye graded "No DR" with confidence 0.95, the kind of error a confidence-based review rule cannot catch.</em>
 </p>
@@ -236,7 +236,7 @@ tests/
     test_lesions.py         hand-checked lesion-flag rules
     test_smoke.py           synthetic end-to-end run
 analysis/grey_standardised.py   post hoc grade-standardised grey-surround comparison
-demo/                       optional Gradio app, its check script and screenshot
+demo/                       optional Gradio app, its check script and screenshots
 notebooks/                  read-only exploration, results and explainability notebooks
 runs/                       outputs of the reported runs (no checkpoints)
 logs/                       console output of every stage
@@ -277,9 +277,12 @@ What to try:
 
 <table>
   <tr>
-    <td width="33%"><img src="demo/screenshots/ts000001.png" alt="Demo on ts000001"><br><em>ts000001: no DR, graded 0 with confidence 0.98, no uncertainty flag</em></td>
-    <td width="33%"><img src="demo/screenshots/ts000729.png" alt="Demo on ts000729"><br><em>ts000729: moderate DR graded 0 with confidence 0.95, a confident miss</em></td>
-    <td width="33%"><img src="demo/screenshots/ts000004.png" alt="Demo on ts000004"><br><em>ts000004: moderate DR graded 2, with the low-sharpness warning</em></td>
+    <td width="50%"><img src="demo/screenshots/ts000001.png" alt="Demo on ts000001"><br><em>Confident and correct</em></td>
+    <td width="50%"><img src="demo/screenshots/ts000002.png" alt="Demo on ts000002"><br><em>Uncertain: flagged for extended review</em></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="demo/screenshots/ts000729.png" alt="Demo on ts000729"><br><em>Confident miss (true grade 2)</em></td>
+    <td width="50%"><img src="demo/screenshots/ts000004.png" alt="Demo on ts000004"><br><em>Low-sharpness warning</em></td>
   </tr>
 </table>
 
