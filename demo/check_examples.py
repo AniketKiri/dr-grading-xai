@@ -18,6 +18,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pipeline import Pipeline, example_ids, original_path  # noqa: E402
 
 from drxai.config import cache_dir  # noqa: E402
+
+CONF_TOL = 1e-3
 from drxai.inference import load_manifest  # noqa: E402
 
 
@@ -40,8 +42,13 @@ def main() -> None:
     df = pd.DataFrame(rows)
     print(f"device: {pipe.device}")
     print(df.to_string(index=False))
-    ok = df["crop_identical"].all() and (df["pred_csv"] == df["pred_app"]).all() and (df["conf_csv"] == df["conf_app"]).all()
-    print("ALL MATCH" if ok else "MISMATCH")
+    # Grades and crops must match exactly. Confidence may not: the app infers one image at a time under mixed
+    # precision while evaluate used batches of 32, and fp16 rounding depends on the batch (each example matches
+    # exactly inside its original batch; see the README's demo section). 1e-3 bounds that rounding.
+    ok = (df["crop_identical"].all() and (df["pred_csv"] == df["pred_app"]).all()
+          and (df["abs_diff"] <= CONF_TOL).all())
+    print(f"PASS (grades exact, confidence within {CONF_TOL:g})" if ok else
+          f"FAIL (grade, crop or confidence outside {CONF_TOL:g})")
 
 
 if __name__ == "__main__":

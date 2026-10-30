@@ -270,14 +270,14 @@ the built-in examples. It falls back to the CPU if no GPU is found.
 What to try:
 
 - **ts000729**, the confident miss: a moderate (referable) eye graded "No DR" with confidence 0.95, which
-  the review rule decides automatically.
+  the review rule does not flag ("no flag: routine examination").
 - **ts000004**, the low-sharpness warning: its sharpness (39.3) is below the training band edge (53.4).
   This check is experimental and has not been validated.
 - **Upload your own colour fundus photograph.**
 
 <table>
   <tr>
-    <td width="33%"><img src="demo/screenshots/ts000001.png" alt="Demo on ts000001"><br><em>ts000001: no DR, graded 0 with confidence 0.98, decided automatically</em></td>
+    <td width="33%"><img src="demo/screenshots/ts000001.png" alt="Demo on ts000001"><br><em>ts000001: no DR, graded 0 with confidence 0.98, not flagged</em></td>
     <td width="33%"><img src="demo/screenshots/ts000729.png" alt="Demo on ts000729"><br><em>ts000729: moderate DR graded 0 with confidence 0.95, a confident miss</em></td>
     <td width="33%"><img src="demo/screenshots/ts000004.png" alt="Demo on ts000004"><br><em>ts000004: moderate DR graded 2, with the low-sharpness warning</em></td>
   </tr>

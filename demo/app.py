@@ -99,7 +99,7 @@ def build(pipe: Pipeline) -> gr.Blocks:
         else:
             raise gr.Error("Upload a fundus photograph or choose an example.")
         r = pipe(img)
-        auto = r.action == "decide automatically"
+        auto = r.action == "no flag: routine examination"
         badges = badge(r.action, "green" if auto else "amber")
         if r.low_sharpness:
             badges += badge("image quality warning", "red")
@@ -108,7 +108,7 @@ def build(pipe: Pipeline) -> gr.Blocks:
         details = (f"- Predicted grade: **{SHORT[r.pred]}**\n"
                    f"- Calibrated confidence: **{r.confidence:.2f}** (temperature {pipe.T:.3f}, fitted on validation)\n"
                    f"- P(referable DR, grade >= {pipe.ref}) = **{r.p_referable:.2f}**\n"
-                   f"- Referral rule: decide automatically if confidence >= {pipe.tau:.3f} (threshold set on validation)")
+                   f"- Referral rule: no flag if confidence >= {pipe.tau:.3f} (threshold set on validation)")
         quality = (f"Image quality check (experimental, not validated): sharpness {r.sharpness:.1f}, "
                    f"low band edge {pipe.sharp_low:.1f} (training images).")
         if r.low_sharpness:
